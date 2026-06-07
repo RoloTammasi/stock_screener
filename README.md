@@ -45,7 +45,7 @@ brew install python@3.12
 Create the virtual environment and install dependencies:
 
 ```bash
-cd /Users/derkok/git/stock_screener
+cd ~/git/stock_screener
 chmod +x setup.sh scripts/run_screener.sh
 ./setup.sh
 ```
@@ -76,7 +76,7 @@ CACHE_TTL_HOURS=720
 Run the screener from Terminal:
 
 ```bash
-cd /Users/derkok/git/stock_screener
+cd ~/git/stock_screener
 source .venv/bin/activate
 python main.py run
 ```
