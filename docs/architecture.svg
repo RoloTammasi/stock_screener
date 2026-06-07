@@ -1,123 +1,221 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="980" viewBox="0 0 1600 980" role="img" aria-labelledby="title desc">
-  <title id="title">Deep Value Stock Screener Architecture</title>
-  <desc id="desc">Architecture diagram showing local user entry points, configuration, data providers, screening pipeline, reporting outputs, and web UI APIs.</desc>
+<svg xmlns="http://www.w3.org/2000/svg" width="1900" height="1400" viewBox="0 0 1900 1400" role="img" aria-labelledby="title desc">
+  <title id="title">Stock Screener Architecture, API Endpoints, and Open Source Package Map</title>
+  <desc id="desc">Architecture diagram for the local stock screener showing user entry points, Flask web server, route endpoints, Python screening modules, external FMP and SEC API providers, local cache and outputs, and open source libraries used by the project.</desc>
   <defs>
     <style>
-      .bg { fill: #f7f8fa; }
-      .panel { fill: #ffffff; stroke: #cfd8e3; stroke-width: 2; }
-      .panel-soft { fill: #eef7f4; stroke: #88b7a5; stroke-width: 2; }
-      .panel-blue { fill: #edf4ff; stroke: #8fb2e8; stroke-width: 2; }
-      .panel-gold { fill: #fff7e8; stroke: #e1b35d; stroke-width: 2; }
-      .panel-red { fill: #fff1f0; stroke: #df8d86; stroke-width: 2; }
-      .label { fill: #172033; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 30px; font-weight: 700; }
-      .text { fill: #243043; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 21px; }
-      .small { fill: #435063; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 17px; }
-      .tiny { fill: #566274; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 15px; }
-      .arrow { stroke: #334155; stroke-width: 3; fill: none; marker-end: url(#arrowhead); }
-      .arrow-soft { stroke: #0f766e; stroke-width: 3; fill: none; marker-end: url(#arrowhead-soft); }
-      .dash { stroke-dasharray: 8 8; }
+      .bg { fill: #f6f8fb; }
+      .group { fill: #ffffff; stroke: #d7dee8; stroke-width: 2; }
+      .node { fill: #ffffff; stroke: #b9c5d3; stroke-width: 2; }
+      .node-blue { fill: #edf5ff; stroke: #86aee3; stroke-width: 2; }
+      .node-green { fill: #ecf8f2; stroke: #76b391; stroke-width: 2; }
+      .node-gold { fill: #fff8e8; stroke: #deb45b; stroke-width: 2; }
+      .node-red { fill: #fff0ef; stroke: #db8c86; stroke-width: 2; }
+      .node-purple { fill: #f4f0ff; stroke: #a895d5; stroke-width: 2; }
+      .chip { fill: #ffffff; stroke: #d3dae5; stroke-width: 1.5; }
+      .route { fill: #f8fafc; stroke: #cbd5e1; stroke-width: 1.4; }
+      .title { fill: #162033; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 38px; font-weight: 750; }
+      .subtitle { fill: #4b5565; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 20px; }
+      .section { fill: #253247; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 22px; font-weight: 750; letter-spacing: .3px; }
+      .label { fill: #172033; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 24px; font-weight: 700; }
+      .text { fill: #2f3a4b; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 17px; }
+      .small { fill: #526071; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 14px; }
+      .tiny { fill: #657184; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 12px; }
+      .badgeText { fill: #172033; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 15px; font-weight: 700; }
+      .methodText { fill: #ffffff; font-family: Menlo, Consolas, monospace; font-size: 12px; font-weight: 800; }
+      .routeText { fill: #172033; font-family: Menlo, Consolas, monospace; font-size: 13px; font-weight: 700; }
+      .fnText { fill: #475569; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 12px; }
+      .arrow { stroke: #334155; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+      .arrow-green { stroke: #0f766e; stroke-width: 3; fill: none; marker-end: url(#arrowGreen); }
+      .arrow-soft { stroke: #64748b; stroke-width: 2.4; fill: none; marker-end: url(#arrowSoft); stroke-dasharray: 8 7; }
     </style>
-    <marker id="arrowhead" markerWidth="12" markerHeight="8" refX="11" refY="4" orient="auto">
-      <path d="M0,0 L12,4 L0,8 Z" fill="#334155" />
-    </marker>
-    <marker id="arrowhead-soft" markerWidth="12" markerHeight="8" refX="11" refY="4" orient="auto">
-      <path d="M0,0 L12,4 L0,8 Z" fill="#0f766e" />
-    </marker>
+    <marker id="arrow" markerWidth="13" markerHeight="9" refX="12" refY="4.5" orient="auto"><path d="M0 0 L13 4.5 L0 9 Z" fill="#334155" /></marker>
+    <marker id="arrowGreen" markerWidth="13" markerHeight="9" refX="12" refY="4.5" orient="auto"><path d="M0 0 L13 4.5 L0 9 Z" fill="#0f766e" /></marker>
+    <marker id="arrowSoft" markerWidth="13" markerHeight="9" refX="12" refY="4.5" orient="auto"><path d="M0 0 L13 4.5 L0 9 Z" fill="#64748b" /></marker>
   </defs>
 
-  <rect class="bg" width="1600" height="980" />
-  <text class="label" x="80" y="70">Deep Value Stock Screener Architecture</text>
-  <text class="text" x="80" y="105">Local-only Python app for screening U.S.-listed stocks, generating reports, and browsing results in a spreadsheet-like UI.</text>
+  <rect class="bg" width="1900" height="1400" />
+  <text class="title" x="70" y="70">Stock Screener Architecture</text>
+  <text class="subtitle" x="70" y="106">Local Python app with a Flask web UI, explicit route endpoints, FMP/SEC data providers, cached API responses, CSV/Excel/SQLite outputs, and package dependencies.</text>
 
-  <rect class="panel" x="70" y="150" width="250" height="170" rx="12" />
-  <text class="label" x="95" y="200">User</text>
-  <text class="text" x="95" y="238">Terminal commands</text>
-  <text class="text" x="95" y="270">Local browser</text>
-  <text class="small" x="95" y="300">Manual runs only</text>
+  <rect class="group" x="50" y="145" width="330" height="470" rx="16" />
+  <text class="section" x="78" y="188">User entry points</text>
 
-  <rect class="panel-gold" x="70" y="385" width="250" height="165" rx="12" />
-  <text class="label" x="95" y="430">Configuration</text>
-  <text class="text" x="95" y="468">.env</text>
-  <text class="text" x="95" y="498">config.py</text>
-  <text class="small" x="95" y="528">API keys, thresholds, paths</text>
+  <rect class="node" x="82" y="220" width="265" height="120" rx="14" />
+  <circle cx="125" cy="262" r="24" fill="#111827" />
+  <text x="113" y="270" fill="#ffffff" font-family="Menlo, Consolas, monospace" font-size="22" font-weight="700">$</text>
+  <text class="label" x="165" y="258">Terminal</text>
+  <text class="text" x="165" y="288">python main.py run</text>
+  <text class="small" x="165" y="314">manual CLI workflow</text>
 
-  <rect class="panel-blue" x="410" y="135" width="290" height="205" rx="12" />
-  <text class="label" x="435" y="185">main.py</text>
-  <text class="text" x="435" y="225">CLI: python main.py run</text>
-  <text class="text" x="435" y="258">Flask: python main.py serve</text>
-  <text class="small" x="435" y="294">Run status, stop run, clear cache</text>
+  <rect class="node" x="82" y="375" width="265" height="120" rx="14" />
+  <rect x="103" y="410" width="44" height="34" rx="7" fill="#0f766e" />
+  <rect x="109" y="416" width="32" height="6" rx="2" fill="#ccfbf1" />
+  <rect x="109" y="427" width="20" height="5" rx="2" fill="#ccfbf1" />
+  <text class="label" x="165" y="413">Local browser</text>
+  <text class="text" x="165" y="443">http://127.0.0.1:5000</text>
+  <text class="small" x="165" y="469">spreadsheet-like UI</text>
 
-  <rect class="panel-soft" x="810" y="130" width="310" height="215" rx="12" />
-  <text class="label" x="835" y="180">Web UI</text>
-  <text class="text" x="835" y="220">templates/index.html</text>
-  <text class="text" x="835" y="252">static/app.js</text>
-  <text class="text" x="835" y="284">static/styles.css</text>
-  <text class="small" x="835" y="316">Filter, sort, dark mode, watchlist</text>
+  <rect class="node-gold" x="82" y="530" width="265" height="58" rx="14" />
+  <text class="label" x="110" y="566">.env + config.py</text>
+  <text class="small" x="110" y="586">API keys, thresholds, paths</text>
 
-  <rect class="panel" x="1200" y="135" width="290" height="205" rx="12" />
-  <text class="label" x="1225" y="185">Browser APIs</text>
-  <text class="text" x="1225" y="225">/api/results</text>
-  <text class="text" x="1225" y="258">/api/run-status</text>
-  <text class="text" x="1225" y="291">/api/run, /api/stop-run</text>
+  <rect class="group" x="450" y="145" width="890" height="470" rx="16" />
+  <text class="section" x="478" y="188">Local application runtime</text>
 
-  <rect class="panel-blue" x="410" y="440" width="290" height="190" rx="12" />
-  <text class="label" x="435" y="490">screener.py</text>
-  <text class="text" x="435" y="530">Universe loop</text>
-  <text class="text" x="435" y="562">Progress callbacks</text>
-  <text class="text" x="435" y="594">Cancellation checks</text>
+  <rect class="node-blue" x="485" y="225" width="245" height="130" rx="14" />
+  <g transform="translate(510 250)">
+    <path d="M30 4 C48 4 56 14 56 30 C56 46 44 58 27 58 L14 58 C6 58 2 52 2 45 C2 37 8 32 16 32 L28 32 C35 32 39 28 39 22 C39 16 35 12 28 12 L16 12 C9 12 5 9 5 4 Z" fill="#3674a8" />
+    <path d="M32 65 C14 65 6 55 6 39 C6 23 18 11 35 11 L48 11 C56 11 60 17 60 24 C60 32 54 37 46 37 L34 37 C27 37 23 41 23 47 C23 53 27 57 34 57 L46 57 C53 57 57 60 57 65 Z" fill="#ffd846" />
+    <circle cx="20" cy="21" r="3" fill="#ffffff" /><circle cx="42" cy="48" r="3" fill="#ffffff" />
+  </g>
+  <text class="label" x="590" y="264">Python 3.12+</text>
+  <text class="text" x="590" y="294">main.py</text>
+  <text class="small" x="590" y="322">CLI commands and Flask app factory</text>
 
-  <rect class="panel-soft" x="810" y="435" width="310" height="200" rx="12" />
-  <text class="label" x="835" y="485">metrics.py</text>
-  <text class="text" x="835" y="525">NCA, current ratio</text>
-  <text class="text" x="835" y="557">MC/NCA, Debt/NCA</text>
-  <text class="text" x="835" y="589">Graham net-net, score</text>
+  <rect class="node-blue" x="770" y="225" width="255" height="130" rx="14" />
+  <g transform="translate(795 250)">
+    <path d="M29 8 L29 28 L15 52 C10 60 15 68 25 68 L60 68 C70 68 75 60 70 52 L56 28 L56 8" fill="none" stroke="#111827" stroke-width="5" stroke-linejoin="round" />
+    <path d="M23 48 H62" stroke="#111827" stroke-width="5" /><path d="M28 58 H57" stroke="#94a3b8" stroke-width="8" />
+  </g>
+  <text class="label" x="875" y="264">Flask server</text>
+  <text class="text" x="875" y="294">Flask &amp; Werkzeug</text>
+  <text class="small" x="875" y="322">serves HTML, static files, JSON APIs</text>
 
-  <rect class="panel-gold" x="1200" y="420" width="290" height="235" rx="12" />
-  <text class="label" x="1225" y="470">reporting.py</text>
-  <text class="text" x="1225" y="510">CSV reports</text>
-  <text class="text" x="1225" y="542">Excel workbook</text>
-  <text class="text" x="1225" y="574">SQLite history</text>
-  <text class="text" x="1225" y="606">Optional email summary</text>
+  <rect class="node-green" x="1065" y="225" width="255" height="130" rx="14" />
+  <rect x="1092" y="252" width="54" height="42" rx="8" fill="#0f766e" />
+  <rect x="1100" y="262" width="38" height="6" rx="2" fill="#ccfbf1" /><rect x="1100" y="275" width="28" height="5" rx="2" fill="#ccfbf1" /><rect x="1100" y="287" width="33" height="5" rx="2" fill="#ccfbf1" />
+  <text class="label" x="1160" y="264">Web UI</text>
+  <text class="text" x="1160" y="294">HTML, CSS, JS</text>
+  <text class="small" x="1160" y="322">filters, tabs, watchlist, logs</text>
 
-  <rect class="panel-red" x="410" y="735" width="290" height="175" rx="12" />
-  <text class="label" x="435" y="785">Data Providers</text>
-  <text class="text" x="435" y="825">FMP primary API</text>
-  <text class="text" x="435" y="857">SEC EDGAR fallback</text>
-  <text class="small" x="435" y="888">data_provider.py</text>
+  <rect class="node-purple" x="485" y="420" width="245" height="145" rx="14" />
+  <text class="label" x="515" y="460">screener.py</text>
+  <text class="text" x="515" y="493">Universe loop</text>
+  <text class="text" x="515" y="523">progress + cancellation</text>
+  <text class="small" x="515" y="550">orchestrates provider calls</text>
 
-  <rect class="panel" x="810" y="735" width="310" height="175" rx="12" />
-  <text class="label" x="835" y="785">Local Cache</text>
-  <text class="text" x="835" y="825">cache/http/*.json</text>
-  <text class="text" x="835" y="857">TTL controlled by .env</text>
-  <text class="small" x="835" y="888">Clearable from web UI</text>
+  <rect class="node-purple" x="770" y="420" width="255" height="145" rx="14" />
+  <g transform="translate(795 445)"><rect x="0" y="0" width="64" height="64" rx="12" fill="#150458" /><rect x="15" y="10" width="8" height="44" fill="#ffffff" /><rect x="29" y="18" width="8" height="28" fill="#ffca00" /><rect x="43" y="10" width="8" height="44" fill="#ffffff" /></g>
+  <text class="label" x="875" y="460">metrics.py</text>
+  <text class="text" x="875" y="493">pandas DataFrames</text>
+  <text class="small" x="875" y="523">NCA, ratios, net-net, score</text>
 
-  <rect class="panel" x="1200" y="735" width="290" height="175" rx="12" />
-  <text class="label" x="1225" y="785">Local Outputs</text>
-  <text class="text" x="1225" y="825">output/*.csv, *.xlsx</text>
-  <text class="text" x="1225" y="857">data/*.sqlite3</text>
-  <text class="text" x="1225" y="889">logs/screener.log</text>
+  <rect class="node-gold" x="1065" y="420" width="255" height="145" rx="14" />
+  <text class="label" x="1095" y="460">reporting.py</text>
+  <text class="text" x="1095" y="493">CSV + Excel</text>
+  <text class="text" x="1095" y="523">SQLite history</text>
+  <text class="small" x="1095" y="550">optional SMTP summary</text>
 
-  <path class="arrow" d="M320 235 H410" />
-  <path class="arrow" d="M320 465 H382 C395 465 395 310 410 310" />
-  <path class="arrow-soft" d="M700 235 H810" />
-  <path class="arrow-soft" d="M1120 235 H1200" />
-  <path class="arrow" d="M555 340 V440" />
-  <path class="arrow" d="M700 535 H810" />
-  <path class="arrow" d="M1120 535 H1200" />
-  <path class="arrow" d="M555 630 V735" />
-  <path class="arrow" d="M700 822 H810" />
-  <path class="arrow" d="M1120 822 H1200" />
-  <path class="arrow dash" d="M1345 420 V340" />
-  <path class="arrow dash" d="M1345 735 V655" />
+  <rect class="group" x="50" y="675" width="1340" height="330" rx="16" />
+  <text class="section" x="78" y="718">Data provider APIs and local persistence</text>
 
-  <text class="tiny" x="725" y="218">serves</text>
-  <text class="tiny" x="1145" y="218">fetches</text>
-  <text class="tiny" x="575" y="395">runs</text>
-  <text class="tiny" x="725" y="515">calculates</text>
-  <text class="tiny" x="1145" y="515">writes</text>
-  <text class="tiny" x="575" y="700">retrieves</text>
-  <text class="tiny" x="725" y="805">caches</text>
-  <text class="tiny" x="1145" y="805">stores</text>
-  <text class="tiny" x="1360" y="380">reads latest results</text>
-  <text class="tiny" x="1360" y="700">history and files</text>
+  <rect class="node-red" x="82" y="755" width="325" height="150" rx="14" />
+  <g transform="translate(110 783)">
+    <rect x="0" y="0" width="58" height="58" rx="13" fill="#123c69" />
+    <text x="9" y="36" fill="#ffffff" font-family="Arial, sans-serif" font-size="20" font-weight="800">FMP</text>
+  </g>
+  <text class="label" x="185" y="795">Financial Modeling Prep</text>
+  <text class="small" x="185" y="826">company-screener, stock-list</text>
+  <text class="small" x="185" y="850">profile, balance-sheet-statement</text>
+  <text class="small" x="185" y="874">enterprise-values</text>
+
+  <rect class="node-red" x="82" y="920" width="325" height="72" rx="14" />
+  <g transform="translate(110 934)">
+    <circle cx="29" cy="29" r="27" fill="#1e3a8a" />
+    <text x="12" y="36" fill="#ffffff" font-family="Georgia, serif" font-size="18" font-weight="700">SEC</text>
+  </g>
+  <text class="label" x="185" y="950">SEC EDGAR</text>
+  <text class="small" x="185" y="974">companyfacts / CIK JSON fallback</text>
+
+  <rect class="node" x="465" y="755" width="250" height="150" rx="14" />
+  <g transform="translate(493 785)"><path d="M2 20 C2 9 60 9 60 20 V58 C60 70 2 70 2 58 Z" fill="#e2e8f0" stroke="#64748b" stroke-width="3" /><ellipse cx="31" cy="20" rx="29" ry="12" fill="#f8fafc" stroke="#64748b" stroke-width="3" /><path d="M2 40 C2 51 60 51 60 40" fill="none" stroke="#64748b" stroke-width="2" /></g>
+  <text class="label" x="573" y="795">HTTP cache</text>
+  <text class="text" x="573" y="829">cache/http/*.json</text>
+  <text class="small" x="573" y="859">TTL and clear-cache button</text>
+
+  <rect class="node-green" x="775" y="755" width="250" height="150" rx="14" />
+  <text class="label" x="803" y="795">Screened rows</text>
+  <text class="text" x="803" y="829">ranked DataFrames</text>
+  <text class="text" x="803" y="859">filtered + top 50</text>
+  <text class="small" x="803" y="888">continues on ticker errors</text>
+
+  <rect class="node-gold" x="1085" y="755" width="260" height="150" rx="14" />
+  <text class="label" x="1113" y="795">Local outputs</text>
+  <text class="text" x="1113" y="829">CSV and XLSX files</text>
+  <text class="text" x="1113" y="859">SQLite database</text>
+  <text class="small" x="1113" y="888">logs/screener.log</text>
+
+  <rect class="group" x="50" y="1050" width="1340" height="275" rx="16" />
+  <text class="section" x="78" y="1092">Flask routes and API endpoints</text>
+  <text class="small" x="78" y="1118">Each endpoint is implemented in main.py and served by the local Flask server.</text>
+
+  <g transform="translate(82 1145)">
+    <rect class="route" x="0" y="0" width="300" height="54" rx="12" /><rect x="14" y="15" width="46" height="24" rx="6" fill="#2563eb" /><text class="methodText" x="24" y="32">GET</text><circle cx="84" cy="27" r="18" fill="#0f766e" /><text x="75" y="33" fill="#ffffff" font-family="Arial" font-size="14" font-weight="800">UI</text><text class="routeText" x="108" y="23">/</text><text class="fnText" x="108" y="42">index</text>
+  </g>
+  <g transform="translate(402 1145)">
+    <rect class="route" x="0" y="0" width="300" height="54" rx="12" /><rect x="14" y="15" width="46" height="24" rx="6" fill="#2563eb" /><text class="methodText" x="24" y="32">GET</text><circle cx="84" cy="27" r="18" fill="#111827" /><text x="72" y="33" fill="#ffffff" font-family="Arial" font-size="12" font-weight="800">API</text><text class="routeText" x="108" y="23">/api/results</text><text class="fnText" x="108" y="42">api_results</text>
+  </g>
+  <g transform="translate(722 1145)">
+    <rect class="route" x="0" y="0" width="300" height="54" rx="12" /><rect x="14" y="15" width="46" height="24" rx="6" fill="#2563eb" /><text class="methodText" x="24" y="32">GET</text><circle cx="84" cy="27" r="18" fill="#111827" /><text x="72" y="33" fill="#ffffff" font-family="Arial" font-size="12" font-weight="800">API</text><text class="routeText" x="108" y="23">/api/run-status</text><text class="fnText" x="108" y="42">api_run_status</text>
+  </g>
+  <g transform="translate(1042 1145)">
+    <rect class="route" x="0" y="0" width="300" height="54" rx="12" /><rect x="14" y="15" width="50" height="24" rx="6" fill="#16a34a" /><text class="methodText" x="23" y="32">POST</text><circle cx="88" cy="27" r="18" fill="#111827" /><text x="76" y="33" fill="#ffffff" font-family="Arial" font-size="12" font-weight="800">API</text><text class="routeText" x="112" y="23">/api/run</text><text class="fnText" x="112" y="42">api_run</text>
+  </g>
+  <g transform="translate(82 1220)">
+    <rect class="route" x="0" y="0" width="300" height="54" rx="12" /><rect x="14" y="15" width="50" height="24" rx="6" fill="#16a34a" /><text class="methodText" x="23" y="32">POST</text><circle cx="88" cy="27" r="18" fill="#111827" /><text x="76" y="33" fill="#ffffff" font-family="Arial" font-size="12" font-weight="800">API</text><text class="routeText" x="112" y="23">/api/stop-run</text><text class="fnText" x="112" y="42">api_stop_run</text>
+  </g>
+  <g transform="translate(402 1220)">
+    <rect class="route" x="0" y="0" width="300" height="54" rx="12" /><rect x="14" y="15" width="50" height="24" rx="6" fill="#16a34a" /><text class="methodText" x="23" y="32">POST</text><circle cx="88" cy="27" r="18" fill="#111827" /><text x="76" y="33" fill="#ffffff" font-family="Arial" font-size="12" font-weight="800">API</text><text class="routeText" x="112" y="23">/api/cache/clear</text><text class="fnText" x="112" y="42">api_clear_cache</text>
+  </g>
+  <g transform="translate(722 1220)">
+    <rect class="route" x="0" y="0" width="300" height="54" rx="12" /><rect x="14" y="15" width="50" height="24" rx="6" fill="#16a34a" /><text class="methodText" x="23" y="32">POST</text><circle cx="88" cy="27" r="18" fill="#b91c1c" /><text x="75" y="33" fill="#ffffff" font-family="Arial" font-size="11" font-weight="800">OFF</text><text class="routeText" x="112" y="23">/shutdown</text><text class="fnText" x="112" y="42">shutdown</text>
+  </g>
+  <g transform="translate(1042 1220)">
+    <rect class="route" x="0" y="0" width="300" height="54" rx="12" /><rect x="14" y="15" width="50" height="24" rx="6" fill="#16a34a" /><text class="methodText" x="23" y="32">POST</text><circle cx="88" cy="27" r="18" fill="#64748b" /><text x="76" y="33" fill="#ffffff" font-family="Arial" font-size="11" font-weight="800">WEB</text><text class="routeText" x="112" y="23">/run</text><text class="fnText" x="112" y="42">run_from_web legacy form</text>
+  </g>
+
+  <rect class="group" x="1435" y="145" width="390" height="1180" rx="16" />
+  <text class="section" x="1465" y="188">Open source packages</text>
+  <text class="small" x="1465" y="216">Logo-style badges are self-contained SVG marks.</text>
+
+  <g transform="translate(1465 245)"><rect class="chip" x="0" y="0" width="315" height="62" rx="12" /><path d="M22 15 C35 10 49 15 49 29 C49 42 38 49 25 49 H17 C11 49 8 45 8 40 C8 35 12 32 17 32 H27 C32 32 35 29 35 25 C35 21 32 18 27 18 H18 C14 18 12 17 12 14 Z" fill="#3674a8" /><path d="M42 47 C29 52 15 47 15 33 C15 20 26 13 39 13 H47 C53 13 56 17 56 22 C56 27 52 30 47 30 H37 C32 30 29 33 29 37 C29 41 32 44 37 44 H46 C50 44 52 45 52 48 Z" fill="#ffd846" /><text class="badgeText" x="76" y="27">Python</text><text class="small" x="76" y="48">runtime, CLI, application code</text></g>
+  <g transform="translate(1465 322)"><rect class="chip" x="0" y="0" width="315" height="62" rx="12" /><path d="M32 10 L32 27 L20 48 C16 55 20 59 28 59 H55 C63 59 67 55 63 48 L51 27 L51 10" fill="none" stroke="#111827" stroke-width="4" stroke-linejoin="round" /><path d="M25 43 H58" stroke="#111827" stroke-width="4" /><text class="badgeText" x="76" y="27">Flask</text><text class="small" x="76" y="48">local web server and API routes</text></g>
+  <g transform="translate(1465 399)"><rect class="chip" x="0" y="0" width="315" height="62" rx="12" /><rect x="17" y="10" width="46" height="46" rx="8" fill="#150458" /><rect x="28" y="17" width="6" height="32" fill="#ffffff" /><rect x="39" y="23" width="6" height="20" fill="#ffca00" /><rect x="50" y="17" width="6" height="32" fill="#ffffff" /><text class="badgeText" x="76" y="27">pandas</text><text class="small" x="76" y="48">tabular metrics, sorting, exports</text></g>
+  <g transform="translate(1465 476)"><rect class="chip" x="0" y="0" width="315" height="62" rx="12" /><circle cx="40" cy="31" r="23" fill="#2563eb" /><path d="M27 32 H52 M44 23 L53 32 L44 41" stroke="#ffffff" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round" /><text class="badgeText" x="76" y="27">requests</text><text class="small" x="76" y="48">HTTP calls to FMP and SEC APIs</text></g>
+  <g transform="translate(1465 553)"><rect class="chip" x="0" y="0" width="315" height="62" rx="12" /><rect x="16" y="14" width="48" height="34" rx="6" fill="#16a34a" /><text x="24" y="37" fill="#ffffff" font-family="Menlo, Consolas, monospace" font-size="15" font-weight="700">.env</text><text class="badgeText" x="76" y="27">python-dotenv</text><text class="small" x="76" y="48">loads local environment variables</text></g>
+  <g transform="translate(1465 630)"><rect class="chip" x="0" y="0" width="315" height="62" rx="12" /><rect x="16" y="11" width="48" height="40" rx="5" fill="#15803d" /><path d="M16 24 H64 M16 37 H64 M31 11 V51 M48 11 V51" stroke="#dcfce7" stroke-width="2" /><text class="badgeText" x="76" y="27">openpyxl</text><text class="small" x="76" y="48">Excel workbook writer</text></g>
+  <g transform="translate(1465 707)"><rect class="chip" x="0" y="0" width="315" height="62" rx="12" /><rect x="16" y="23" width="48" height="16" rx="8" fill="#e2e8f0" /><rect x="16" y="23" width="34" height="16" rx="8" fill="#0f766e" /><text class="badgeText" x="76" y="27">tqdm</text><text class="small" x="76" y="48">terminal progress indicators</text></g>
+  <g transform="translate(1465 784)"><rect class="chip" x="0" y="0" width="315" height="62" rx="12" /><circle cx="40" cy="31" r="23" fill="#f59e0b" /><path d="M28 31 L37 40 L53 22" stroke="#ffffff" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round" /><text class="badgeText" x="76" y="27">pytest</text><text class="small" x="76" y="48">financial logic and web state tests</text></g>
+  <g transform="translate(1465 861)"><rect class="chip" x="0" y="0" width="315" height="62" rx="12" /><path d="M17 20 C17 10 63 10 63 20 V45 C63 55 17 55 17 45 Z" fill="#e0f2fe" stroke="#0369a1" stroke-width="3" /><ellipse cx="40" cy="20" rx="23" ry="10" fill="#f0f9ff" stroke="#0369a1" stroke-width="3" /><text class="badgeText" x="76" y="27">SQLite</text><text class="small" x="76" y="48">standard-library history database</text></g>
+  <g transform="translate(1465 938)"><rect class="chip" x="0" y="0" width="315" height="62" rx="12" /><rect x="16" y="13" width="48" height="36" rx="8" fill="#475569" /><text x="25" y="36" fill="#ffffff" font-family="Arial" font-size="15" font-weight="800">LOG</text><text class="badgeText" x="76" y="27">logging</text><text class="small" x="76" y="48">standard-library run logs</text></g>
+  <g transform="translate(1465 1015)"><rect class="chip" x="0" y="0" width="315" height="62" rx="12" /><circle cx="40" cy="31" r="23" fill="#dc2626" /><text x="26" y="37" fill="#ffffff" font-family="Arial" font-size="15" font-weight="800">SMTP</text><text class="badgeText" x="76" y="27">smtplib/email</text><text class="small" x="76" y="48">standard-library email report</text></g>
+
+  <path class="arrow" d="M347 280 H485" />
+  <path class="arrow-green" d="M347 435 H770" />
+  <path class="arrow" d="M730 290 H770" />
+  <path class="arrow-green" d="M1025 290 H1065" />
+  <path class="arrow" d="M608 355 V420" />
+  <path class="arrow" d="M730 492 H770" />
+  <path class="arrow" d="M1025 492 H1065" />
+  <path class="arrow-soft" d="M110 588 C160 650 170 720 210 755" />
+  <path class="arrow" d="M407 830 H465" />
+  <path class="arrow" d="M715 830 H775" />
+  <path class="arrow" d="M1025 830 H1085" />
+  <path class="arrow-soft" d="M1210 755 C1210 665 1195 625 1195 565" />
+  <path class="arrow-soft" d="M1320 492 H1435" />
+  <path class="arrow-soft" d="M895 615 C895 850 700 960 700 1050" />
+
+  <text class="tiny" x="388" y="260">CLI starts app</text>
+  <text class="tiny" x="382" y="415">Browser requests</text>
+  <text class="tiny" x="735" y="274">creates</text>
+  <text class="tiny" x="1032" y="274">serves</text>
+  <text class="tiny" x="620" y="392">runs</text>
+  <text class="tiny" x="735" y="476">calculates</text>
+  <text class="tiny" x="1032" y="476">reports</text>
+  <text class="tiny" x="420" y="812">download/cache</text>
+  <text class="tiny" x="727" y="812">hydrate</text>
+  <text class="tiny" x="1035" y="812">write</text>
+  <text class="tiny" x="1215" y="674">latest results API</text>
+  <text class="tiny" x="1350" y="472">dependencies</text>
+  <text class="tiny" x="760" y="1018">route map</text>
 </svg>
