@@ -1,0 +1,123 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="980" viewBox="0 0 1600 980" role="img" aria-labelledby="title desc">
+  <title id="title">Deep Value Stock Screener Architecture</title>
+  <desc id="desc">Architecture diagram showing local user entry points, configuration, data providers, screening pipeline, reporting outputs, and web UI APIs.</desc>
+  <defs>
+    <style>
+      .bg { fill: #f7f8fa; }
+      .panel { fill: #ffffff; stroke: #cfd8e3; stroke-width: 2; }
+      .panel-soft { fill: #eef7f4; stroke: #88b7a5; stroke-width: 2; }
+      .panel-blue { fill: #edf4ff; stroke: #8fb2e8; stroke-width: 2; }
+      .panel-gold { fill: #fff7e8; stroke: #e1b35d; stroke-width: 2; }
+      .panel-red { fill: #fff1f0; stroke: #df8d86; stroke-width: 2; }
+      .label { fill: #172033; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 30px; font-weight: 700; }
+      .text { fill: #243043; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 21px; }
+      .small { fill: #435063; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 17px; }
+      .tiny { fill: #566274; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 15px; }
+      .arrow { stroke: #334155; stroke-width: 3; fill: none; marker-end: url(#arrowhead); }
+      .arrow-soft { stroke: #0f766e; stroke-width: 3; fill: none; marker-end: url(#arrowhead-soft); }
+      .dash { stroke-dasharray: 8 8; }
+    </style>
+    <marker id="arrowhead" markerWidth="12" markerHeight="8" refX="11" refY="4" orient="auto">
+      <path d="M0,0 L12,4 L0,8 Z" fill="#334155" />
+    </marker>
+    <marker id="arrowhead-soft" markerWidth="12" markerHeight="8" refX="11" refY="4" orient="auto">
+      <path d="M0,0 L12,4 L0,8 Z" fill="#0f766e" />
+    </marker>
+  </defs>
+
+  <rect class="bg" width="1600" height="980" />
+  <text class="label" x="80" y="70">Deep Value Stock Screener Architecture</text>
+  <text class="text" x="80" y="105">Local-only Python app for screening U.S.-listed stocks, generating reports, and browsing results in a spreadsheet-like UI.</text>
+
+  <rect class="panel" x="70" y="150" width="250" height="170" rx="12" />
+  <text class="label" x="95" y="200">User</text>
+  <text class="text" x="95" y="238">Terminal commands</text>
+  <text class="text" x="95" y="270">Local browser</text>
+  <text class="small" x="95" y="300">Manual runs only</text>
+
+  <rect class="panel-gold" x="70" y="385" width="250" height="165" rx="12" />
+  <text class="label" x="95" y="430">Configuration</text>
+  <text class="text" x="95" y="468">.env</text>
+  <text class="text" x="95" y="498">config.py</text>
+  <text class="small" x="95" y="528">API keys, thresholds, paths</text>
+
+  <rect class="panel-blue" x="410" y="135" width="290" height="205" rx="12" />
+  <text class="label" x="435" y="185">main.py</text>
+  <text class="text" x="435" y="225">CLI: python main.py run</text>
+  <text class="text" x="435" y="258">Flask: python main.py serve</text>
+  <text class="small" x="435" y="294">Run status, stop run, clear cache</text>
+
+  <rect class="panel-soft" x="810" y="130" width="310" height="215" rx="12" />
+  <text class="label" x="835" y="180">Web UI</text>
+  <text class="text" x="835" y="220">templates/index.html</text>
+  <text class="text" x="835" y="252">static/app.js</text>
+  <text class="text" x="835" y="284">static/styles.css</text>
+  <text class="small" x="835" y="316">Filter, sort, dark mode, watchlist</text>
+
+  <rect class="panel" x="1200" y="135" width="290" height="205" rx="12" />
+  <text class="label" x="1225" y="185">Browser APIs</text>
+  <text class="text" x="1225" y="225">/api/results</text>
+  <text class="text" x="1225" y="258">/api/run-status</text>
+  <text class="text" x="1225" y="291">/api/run, /api/stop-run</text>
+
+  <rect class="panel-blue" x="410" y="440" width="290" height="190" rx="12" />
+  <text class="label" x="435" y="490">screener.py</text>
+  <text class="text" x="435" y="530">Universe loop</text>
+  <text class="text" x="435" y="562">Progress callbacks</text>
+  <text class="text" x="435" y="594">Cancellation checks</text>
+
+  <rect class="panel-soft" x="810" y="435" width="310" height="200" rx="12" />
+  <text class="label" x="835" y="485">metrics.py</text>
+  <text class="text" x="835" y="525">NCA, current ratio</text>
+  <text class="text" x="835" y="557">MC/NCA, Debt/NCA</text>
+  <text class="text" x="835" y="589">Graham net-net, score</text>
+
+  <rect class="panel-gold" x="1200" y="420" width="290" height="235" rx="12" />
+  <text class="label" x="1225" y="470">reporting.py</text>
+  <text class="text" x="1225" y="510">CSV reports</text>
+  <text class="text" x="1225" y="542">Excel workbook</text>
+  <text class="text" x="1225" y="574">SQLite history</text>
+  <text class="text" x="1225" y="606">Optional email summary</text>
+
+  <rect class="panel-red" x="410" y="735" width="290" height="175" rx="12" />
+  <text class="label" x="435" y="785">Data Providers</text>
+  <text class="text" x="435" y="825">FMP primary API</text>
+  <text class="text" x="435" y="857">SEC EDGAR fallback</text>
+  <text class="small" x="435" y="888">data_provider.py</text>
+
+  <rect class="panel" x="810" y="735" width="310" height="175" rx="12" />
+  <text class="label" x="835" y="785">Local Cache</text>
+  <text class="text" x="835" y="825">cache/http/*.json</text>
+  <text class="text" x="835" y="857">TTL controlled by .env</text>
+  <text class="small" x="835" y="888">Clearable from web UI</text>
+
+  <rect class="panel" x="1200" y="735" width="290" height="175" rx="12" />
+  <text class="label" x="1225" y="785">Local Outputs</text>
+  <text class="text" x="1225" y="825">output/*.csv, *.xlsx</text>
+  <text class="text" x="1225" y="857">data/*.sqlite3</text>
+  <text class="text" x="1225" y="889">logs/screener.log</text>
+
+  <path class="arrow" d="M320 235 H410" />
+  <path class="arrow" d="M320 465 H382 C395 465 395 310 410 310" />
+  <path class="arrow-soft" d="M700 235 H810" />
+  <path class="arrow-soft" d="M1120 235 H1200" />
+  <path class="arrow" d="M555 340 V440" />
+  <path class="arrow" d="M700 535 H810" />
+  <path class="arrow" d="M1120 535 H1200" />
+  <path class="arrow" d="M555 630 V735" />
+  <path class="arrow" d="M700 822 H810" />
+  <path class="arrow" d="M1120 822 H1200" />
+  <path class="arrow dash" d="M1345 420 V340" />
+  <path class="arrow dash" d="M1345 735 V655" />
+
+  <text class="tiny" x="725" y="218">serves</text>
+  <text class="tiny" x="1145" y="218">fetches</text>
+  <text class="tiny" x="575" y="395">runs</text>
+  <text class="tiny" x="725" y="515">calculates</text>
+  <text class="tiny" x="1145" y="515">writes</text>
+  <text class="tiny" x="575" y="700">retrieves</text>
+  <text class="tiny" x="725" y="805">caches</text>
+  <text class="tiny" x="1145" y="805">stores</text>
+  <text class="tiny" x="1360" y="380">reads latest results</text>
+  <text class="tiny" x="1360" y="700">history and files</text>
+</svg>

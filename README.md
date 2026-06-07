@@ -2,6 +2,10 @@
 
 A local, web-based Python application for screening U.S.-listed common stocks for deep value opportunities. It runs from Terminal, writes CSV and Excel reports, stores run history in SQLite, and serves a simple spreadsheet-like UI for filtering and sorting the latest results.
 
+## Architecture
+
+![Architecture diagram](docs/architecture.svg)
+
 ## Project Structure
 
 ```text
@@ -14,6 +18,7 @@ A local, web-based Python application for screening U.S.-listed common stocks fo
 |-- main.py                # CLI and local Flask web app
 |-- templates/             # Web UI template
 |-- static/                # Web UI CSS and JavaScript
+|-- docs/                  # Architecture diagram
 |-- tests/                 # Unit tests
 |-- scripts/run_screener.sh
 |-- setup.sh
