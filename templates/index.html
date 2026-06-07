@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Deep Value Screener</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  </head>
+  <body>
+    <header class="topbar">
+      <div>
+        <h1>Deep Value Screener</h1>
+        <p>Local results from the latest manual run.</p>
+      </div>
+      <div class="header-actions">
+        <button id="themeToggle" class="secondary-button" type="button" aria-pressed="false">
+          Dark mode
+        </button>
+        <button id="clearCacheButton" class="secondary-button" type="button">Empty cache</button>
+        <form method="post" action="{{ url_for('shutdown') }}">
+          <button class="danger-button" type="submit">Shut down</button>
+        </form>
+        <button id="runButton" type="button">Run screener</button>
+        <button id="stopRunButton" class="danger-button" type="button" disabled>Stop run</button>
+      </div>
+    </header>
+
+    <main>
+      <section class="controls" aria-label="Table controls">
+        <div class="tabs" role="tablist">
+          <button class="tab active" data-kind="filtered" type="button">Filtered</button>
+          <button class="tab" data-kind="all" type="button">All Companies</button>
+          <button class="tab" data-kind="watchlist" type="button">Watchlist</button>
+        </div>
+        <label class="search">
+          <span>Filter</span>
+          <input id="filterInput" type="search" placeholder="Ticker, company, metric">
+        </label>
+      </section>
+
+      <section class="history" aria-label="History changes">
+        <div>
+          <strong>Entered:</strong>
+          <span>{{ changes.entered|join(", ") if changes.entered else "None yet" }}</span>
+        </div>
+        <div>
+          <strong>Left:</strong>
+          <span>{{ changes.left|join(", ") if changes.left else "None yet" }}</span>
+        </div>
+      </section>
+
+      <section class="run-panel" aria-label="Screener run status" aria-live="polite">
+        <div class="run-panel-header">
+          <strong id="runState">Idle</strong>
+          <span id="runProgressText">No run active.</span>
+        </div>
+        <progress id="runProgress" value="0" max="100"></progress>
+        <pre id="runLog" class="run-log">No run logs yet.</pre>
+      </section>
+
+      <section class="table-wrap">
+        <div id="status" class="status">Loading results...</div>
+        <table id="resultsTable">
+          <thead></thead>
+          <tbody></tbody>
+        </table>
+      </section>
+    </main>
+
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+  </body>
+</html>
