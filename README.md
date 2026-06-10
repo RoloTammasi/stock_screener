@@ -94,7 +94,9 @@ source .venv/bin/activate
 python main.py serve
 ```
 
-Open [http://127.0.0.1:5000](http://127.0.0.1:5000). The UI shows the latest CSV output and lets you filter and sort like a simple spreadsheet.
+Open [http://127.0.0.1:5050](http://127.0.0.1:5050). The UI shows the latest CSV output and lets you filter and sort like a simple spreadsheet.
+
+The app uses port `5050` by default because macOS AirPlay Receiver can occupy port `5000` and return a `403 Forbidden` page. If you choose a custom port, open the matching `http://127.0.0.1:<port>` URL.
 
 For a quick API smoke test:
 

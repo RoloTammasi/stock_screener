@@ -308,7 +308,7 @@ def parse_args() -> argparse.Namespace:
 
     serve_parser = subparsers.add_parser("serve", help="Start the local web UI")
     serve_parser.add_argument("--host", default="127.0.0.1")
-    serve_parser.add_argument("--port", type=int, default=5000)
+    serve_parser.add_argument("--port", type=int, default=5050)
 
     return parser.parse_args()
 
@@ -321,7 +321,7 @@ def main() -> None:
 
     app = create_app()
     host = getattr(args, "host", "127.0.0.1")
-    port = getattr(args, "port", 5000)
+    port = getattr(args, "port", 5050)
     app.run(host=host, port=port, debug=False)
 
 

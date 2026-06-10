@@ -52,7 +52,7 @@
   <rect x="109" y="416" width="32" height="6" rx="2" fill="#ccfbf1" />
   <rect x="109" y="427" width="20" height="5" rx="2" fill="#ccfbf1" />
   <text class="label" x="165" y="413">Local browser</text>
-  <text class="text" x="165" y="443">http://127.0.0.1:5000</text>
+  <text class="text" x="165" y="443">http://127.0.0.1:5050</text>
   <text class="small" x="165" y="469">spreadsheet-like UI</text>
 
   <rect class="node-gold" x="82" y="530" width="265" height="58" rx="14" />
