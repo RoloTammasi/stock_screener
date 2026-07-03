@@ -85,6 +85,15 @@ button {
   padding: 0 12px;
 }
 
+button[hidden] {
+  display: none;
+}
+
+.compact-button {
+  min-height: 30px;
+  padding: 0 10px;
+}
+
 button:hover {
   background: var(--accent-dark);
 }
@@ -169,6 +178,14 @@ input {
   padding: 0 10px;
 }
 
+.table-actions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
 .history {
   color: var(--muted);
   justify-content: flex-start;
@@ -183,12 +200,21 @@ input {
 }
 
 .run-panel-header {
-  align-items: baseline;
+  align-items: center;
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
   justify-content: space-between;
   margin-bottom: 8px;
+}
+
+.run-panel-status {
+  align-items: baseline;
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-width: 240px;
 }
 
 #runProgressText {
@@ -394,7 +420,8 @@ tbody tr:hover {
     min-width: 100%;
   }
 
-  .search {
+  .search,
+  .table-actions {
     align-items: stretch;
     flex-direction: column;
     width: 100%;

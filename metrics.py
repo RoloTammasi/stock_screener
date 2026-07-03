@@ -19,6 +19,7 @@ def calculate_financial_metrics(company: dict[str, Any]) -> dict[str, Any]:
     debt = _num(company.get("debt")) or 0.0
     equity = _num(company.get("equity"))
     enterprise_value = _num(company.get("enterprise_value"))
+    pe_ratio = _num(company.get("pe_ratio"))
 
     nca = None
     if not _has_missing(current_assets, current_liabilities):
@@ -43,6 +44,7 @@ def calculate_financial_metrics(company: dict[str, Any]) -> dict[str, Any]:
         "debt_to_nca": debt_to_nca,
         "debt_to_equity": debt_to_equity,
         "enterprise_value_to_nca": ev_to_nca,
+        "pe_ratio": pe_ratio,
         "net_net_value": net_net_value,
         "graham_net_net": _less_than(market_cap, nca) and _less_than(market_cap, net_net_value),
         "valuation_score": valuation_score(mc_to_nca, ev_to_nca, debt_to_nca, current_ratio),

@@ -19,6 +19,7 @@ def test_calculate_financial_metrics():
         "debt": 10_000_000,
         "equity": 200_000_000,
         "enterprise_value": 60_000_000,
+        "pe_ratio": 12.5,
     }
 
     result = calculate_financial_metrics(company)
@@ -29,6 +30,7 @@ def test_calculate_financial_metrics():
     assert result["nca_per_share"] == 7.5
     assert round(result["debt_to_nca"], 4) == 0.1333
     assert result["debt_to_equity"] == 0.05
+    assert result["pe_ratio"] == 12.5
     assert result["graham_net_net"] is True
 
 

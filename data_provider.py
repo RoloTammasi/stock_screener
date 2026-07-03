@@ -219,6 +219,7 @@ class FinancialModelingPrepProvider(DataProvider):
         enterprise = self._first(
             self._get_fmp("enterprise-values", {"symbol": ticker, "limit": 1})
         ) or {}
+        average_eps_3y = self._average_eps_3y(ticker)
 
         if not balance:
             if "cik" not in profile:
@@ -239,6 +240,12 @@ class FinancialModelingPrepProvider(DataProvider):
             _safe_divide(market_cap, price),
         )
         enterprise_value = _first_number(enterprise.get("enterpriseValue"))
+        profile_pe_ratio = _first_number(
+            profile.get("pe"),
+            profile.get("peRatio"),
+            profile.get("priceEarningsRatio"),
+        )
+        pe_ratio = _safe_divide(price, average_eps_3y) if average_eps_3y and average_eps_3y > 0 else profile_pe_ratio
 
         return {
             "ticker": ticker.upper(),
@@ -251,6 +258,8 @@ class FinancialModelingPrepProvider(DataProvider):
             "debt": balance.get("debt"),
             "equity": balance.get("equity"),
             "enterprise_value": enterprise_value,
+            "average_eps_3y": average_eps_3y,
+            "pe_ratio": pe_ratio,
             "exchange": profile.get("exchangeShortName") or profile.get("exchange"),
             "country": profile.get("country"),
             "source": "fmp" if balance.get("source") != "sec" else "sec",
@@ -260,6 +269,31 @@ class FinancialModelingPrepProvider(DataProvider):
         all_params = {**params, "apikey": self.config.fmp_api_key}
         url = f"{self.base_url}/{endpoint.lstrip('/')}"
         return self.client.get_json(url, all_params)
+
+    def _average_eps_3y(self, ticker: str) -> float | None:
+        try:
+            statements = self._get_fmp(
+                "income-statement",
+                {"symbol": ticker, "period": "annual", "limit": 3},
+            )
+        except requests.RequestException as exc:
+            LOGGER.info("Income statement data unavailable for %s: %s", ticker, exc)
+            return None
+        if not isinstance(statements, list):
+            return None
+        eps_values = [
+            _first_number(
+                statement.get("epsdiluted"),
+                statement.get("epsDiluted"),
+                statement.get("eps"),
+            )
+            for statement in statements[:3]
+            if isinstance(statement, dict)
+        ]
+        eps_values = [value for value in eps_values if value is not None]
+        if not eps_values:
+            return None
+        return sum(eps_values) / len(eps_values)
 
     @staticmethod
     def _first(payload: Any) -> dict[str, Any] | None:

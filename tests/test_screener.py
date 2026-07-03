@@ -22,6 +22,7 @@ class FakeProvider:
                 "current_liabilities": 50_000_000,
                 "debt": 5_000_000,
                 "equity": 100_000_000,
+                "pe_ratio": 8.5,
             }
         return {
             "ticker": "BBB",
@@ -54,6 +55,7 @@ def test_run_screener_filters_ranks_and_continues_on_errors(tmp_path):
     assert len(result.all_companies) == 2
     assert len(result.filtered_companies) == 1
     assert result.filtered_companies.iloc[0]["ticker"] == "AAA"
+    assert result.filtered_companies.iloc[0]["pe_ratio"] == 8.5
     assert result.all_companies.iloc[0]["ticker"] == "AAA"
     assert result.errors == [{"ticker": "ERR", "error": "bad ticker"}]
 

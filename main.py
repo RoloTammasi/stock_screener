@@ -228,6 +228,26 @@ def create_app() -> Flask:
         frame = prepare_json_frame(frame)
         return jsonify({"rows": frame.to_dict(orient="records"), "columns": list(frame.columns)})
 
+    @app.post("/api/watchlist/export")
+    def api_export_watchlist():
+        path = config.output_dir / "all_companies.csv"
+        if not path.exists():
+            return jsonify({"message": "No results yet. Run the screener first."}), 404
+        payload = request.get_json(silent=True) or {}
+        tickers = payload.get("tickers") or []
+        if not isinstance(tickers, list) or not tickers:
+            return jsonify({"message": "No watchlist rows to export."}), 400
+        frame = pd.read_csv(path)
+        export_frame = prepare_watchlist_export_frame(frame, tickers)
+        if export_frame.empty:
+            return jsonify({"message": "No matching watchlist rows were found in the latest results."}), 404
+        desktop = Path.home() / "Desktop"
+        desktop.mkdir(parents=True, exist_ok=True)
+        export_path = desktop / f"stock_screener_watchlist_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
+        export_frame.to_csv(export_path, index=False)
+        LOGGER.info("Exported watchlist CSV to %s", export_path)
+        return jsonify({"message": f"Watchlist CSV saved to {export_path}", "path": str(export_path)})
+
     return app
 
 
@@ -291,6 +311,50 @@ def empty_cache(cache_dir: Path) -> int:
             child.unlink()
     cache_dir.mkdir(parents=True, exist_ok=True)
     return removed_files
+
+
+WATCHLIST_EXPORT_COLUMNS = [
+    ("ticker", "Symbol"),
+    ("company_name", "Name"),
+    ("price", "Price"),
+    ("shares", "Shares"),
+    ("market_cap", "Market Cap (MC)"),
+    ("current_assets", "Current Assets"),
+    ("current_liabilities", "Current Liabilities"),
+    ("net_current_assets", "Net Current Assets (NCA)"),
+    ("current_ratio", "Current Ratio"),
+    ("market_cap_to_nca", "MC/NCA"),
+    ("nca_per_share", "NCA/Share"),
+    ("margin_of_safety", "Margin of Safety"),
+    ("pe_ratio", "PE Ratio"),
+    ("debt", "Debt"),
+    ("debt_to_nca", "Debt/NCA"),
+]
+
+
+def prepare_watchlist_export_frame(frame: pd.DataFrame, tickers: list[str]) -> pd.DataFrame:
+    cleaned_tickers = [str(ticker).strip().upper() for ticker in tickers if str(ticker).strip()]
+    if not cleaned_tickers or "ticker" not in frame.columns:
+        return pd.DataFrame(columns=[label for _, label in WATCHLIST_EXPORT_COLUMNS])
+
+    export = frame.copy()
+    export["ticker"] = export["ticker"].astype(str).str.upper()
+    export = export[export["ticker"].isin(cleaned_tickers)].copy()
+    if export.empty:
+        return pd.DataFrame(columns=[label for _, label in WATCHLIST_EXPORT_COLUMNS])
+
+    order = {ticker: index for index, ticker in enumerate(cleaned_tickers)}
+    export["_watchlist_order"] = export["ticker"].map(order)
+    export = export.sort_values("_watchlist_order", kind="mergesort")
+    if "margin_of_safety" not in export.columns:
+        export["margin_of_safety"] = pd.to_numeric(export.get("nca_per_share"), errors="coerce") * (2 / 3)
+    for column, _ in WATCHLIST_EXPORT_COLUMNS:
+        if column not in export.columns:
+            export[column] = pd.NA
+    export = export[[column for column, _ in WATCHLIST_EXPORT_COLUMNS]].rename(
+        columns=dict(WATCHLIST_EXPORT_COLUMNS)
+    )
+    return prepare_json_frame(export)
 
 
 def prepare_json_frame(frame: pd.DataFrame) -> pd.DataFrame:

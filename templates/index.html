@@ -32,10 +32,13 @@
           <button class="tab" data-kind="all" type="button">All Companies</button>
           <button class="tab" data-kind="watchlist" type="button">Watchlist</button>
         </div>
-        <label class="search">
-          <span>Filter</span>
-          <input id="filterInput" type="search" placeholder="Ticker, company, metric">
-        </label>
+        <div class="table-actions">
+          <button id="exportWatchlistButton" class="secondary-button" type="button" hidden>Export watchlist CSV</button>
+          <label class="search">
+            <span>Filter</span>
+            <input id="filterInput" type="search" placeholder="Ticker, company, metric">
+          </label>
+        </div>
       </section>
 
       <section class="history" aria-label="History changes">
@@ -51,8 +54,11 @@
 
       <section class="run-panel" aria-label="Screener run status" aria-live="polite">
         <div class="run-panel-header">
-          <strong id="runState">Idle</strong>
-          <span id="runProgressText">No run active.</span>
+          <div class="run-panel-status">
+            <strong id="runState">Idle</strong>
+            <span id="runProgressText">No run active.</span>
+          </div>
+          <button id="logToggleButton" class="secondary-button compact-button" type="button" aria-expanded="true">Hide log</button>
         </div>
         <progress id="runProgress" value="0" max="100"></progress>
         <pre id="runLog" class="run-log">No run logs yet.</pre>

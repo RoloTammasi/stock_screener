@@ -167,6 +167,7 @@ OUTPUT_COLUMNS = [
     "market_cap_to_nca",
     "nca_to_market_cap",
     "nca_per_share",
+    "pe_ratio",
     "debt",
     "debt_to_nca",
     "debt_to_equity",

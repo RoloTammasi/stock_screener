@@ -3,14 +3,17 @@ const statusEl = document.getElementById("status");
 const filterInput = document.getElementById("filterInput");
 const themeToggle = document.getElementById("themeToggle");
 const clearCacheButton = document.getElementById("clearCacheButton");
+const exportWatchlistButton = document.getElementById("exportWatchlistButton");
 const runButton = document.getElementById("runButton");
 const stopRunButton = document.getElementById("stopRunButton");
+const logToggleButton = document.getElementById("logToggleButton");
 const runState = document.getElementById("runState");
 const runProgressText = document.getElementById("runProgressText");
 const runProgress = document.getElementById("runProgress");
 const runLog = document.getElementById("runLog");
 const tabs = Array.from(document.querySelectorAll(".tab"));
 const watchlistStorageKey = "deepValueWatchlist";
+const logCollapsedStorageKey = "deepValueLogCollapsed";
 
 let state = {
   kind: "filtered",
@@ -118,6 +121,7 @@ const displayColumns = [
 let watchlist = readWatchlist();
 let runPollTimer = null;
 let lastRunFinishedAt = null;
+let runLogCollapsed = localStorage.getItem(logCollapsedStorageKey) === "true";
 
 function formatHeader(value) {
   if (columnLabels[value] !== undefined) return columnLabels[value];
@@ -135,6 +139,7 @@ function formatCell(column, value) {
   if (!Number.isFinite(number)) return "";
   if (["rank", "valuation_score"].includes(column)) return number.toFixed(0);
   if (column === "market_cap_to_nca") return `${(number * 100).toFixed(2)}%`;
+  if (column === "pe_ratio") return number.toFixed(2);
   if (["current_ratio", "debt_to_nca"].includes(column)) {
     return number.toFixed(2);
   }
@@ -315,7 +320,34 @@ function toggleWatchlist(ticker, checked) {
     watchlist.delete(ticker);
   }
   saveWatchlist();
+  updateTabControls();
   if (state.kind === "watchlist") render();
+}
+
+async function exportWatchlist() {
+  const rows = filteredRows().sort(compareRows);
+  const tickers = rows.map((row) => row.ticker).filter(Boolean);
+  if (state.kind !== "watchlist" || !tickers.length) {
+    statusEl.textContent = "No watchlist rows to export.";
+    return;
+  }
+  exportWatchlistButton.disabled = true;
+  try {
+    const response = await fetch("/api/watchlist/export", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ tickers }),
+    });
+    const payload = await response.json();
+    if (!response.ok) throw new Error(payload.message || `Request failed with ${response.status}`);
+    statusEl.textContent = payload.message || "Watchlist CSV saved to Desktop.";
+    appendLocalRunLog(payload.message || "Watchlist CSV saved to Desktop.");
+  } catch (error) {
+    statusEl.textContent = `Could not export watchlist: ${error.message}`;
+    appendLocalRunLog(`Could not export watchlist: ${error.message}`);
+  } finally {
+    exportWatchlistButton.disabled = false;
+  }
 }
 
 async function startScreenerRun() {
@@ -428,6 +460,24 @@ function setRunButtons(running, cancelRequested = false) {
   clearCacheButton.disabled = running;
 }
 
+function toggleRunLog() {
+  runLogCollapsed = !runLogCollapsed;
+  localStorage.setItem(logCollapsedStorageKey, String(runLogCollapsed));
+  applyRunLogState();
+}
+
+function applyRunLogState() {
+  runLog.hidden = runLogCollapsed;
+  logToggleButton.textContent = runLogCollapsed ? "Show log" : "Hide log";
+  logToggleButton.setAttribute("aria-expanded", String(!runLogCollapsed));
+}
+
+function updateTabControls() {
+  const onWatchlist = state.kind === "watchlist";
+  exportWatchlistButton.hidden = !onWatchlist;
+  exportWatchlistButton.disabled = !onWatchlist || !watchlist.size;
+}
+
 function appendLocalRunLog(message) {
   const current = runLog.textContent === "No run logs yet." ? "" : runLog.textContent;
   const timestamp = formatLogTimestamp(new Date());
@@ -454,6 +504,7 @@ tabs.forEach((tab) => {
     tabs.forEach((item) => item.classList.remove("active"));
     tab.classList.add("active");
     state.kind = tab.dataset.kind;
+    updateTabControls();
     loadResults(state.kind);
   });
 });
@@ -474,7 +525,11 @@ themeToggle.addEventListener("click", () => {
 runButton.addEventListener("click", startScreenerRun);
 stopRunButton.addEventListener("click", stopScreenerRun);
 clearCacheButton.addEventListener("click", clearCache);
+exportWatchlistButton.addEventListener("click", exportWatchlist);
+logToggleButton.addEventListener("click", toggleRunLog);
 
 applyTheme(localStorage.getItem("deepValueTheme") || "light");
+applyRunLogState();
+updateTabControls();
 loadResults(state.kind);
 pollRunStatus(false);
